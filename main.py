@@ -12,12 +12,21 @@ import numpy as np
 
 
 
-df = pd.read_csv('samu_tratado_2019_a_2022.csv', low_memory=False)
+df = pd.read_feather('samu_2019_2022.feather')
 
 df['dia_hora'] = pd.to_datetime(df['dia_hora'])
 df['idade'] = df['idade'].astype(int)
+
+df['ano'] = df['dia_hora'].dt.year # astype(int)
+df['mes'] = df['dia_hora'].dt.month # astype(int)
+df['hora'] = df['dia_hora'].dt.hour # astype(int)
 df['hora'] = df['hora'].fillna(df['hora'].mean())
 df['hora'] = df['hora'].astype(int)
+
+lista_semana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+
+df['semana'] = df['nd_semana'].apply(lambda x: lista_semana[x])
+df['fds'] = df['nd_semana'].apply(lambda x: 1 if x in [0,5,6] else 0)
 
 app = dash.Dash(__name__,
                 external_stylesheets=[{
